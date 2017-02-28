@@ -577,10 +577,6 @@ function uc_stripe_charge($order_id, $amount, $data) {
         $metadata = array("models" => implode(";", $models));
     }
 
-dpm($metadata,$name="metadata");
-dpm($titles,$name="titles");
-dpm($models,$name="models");
-
     $params = array(
       "amount" => $amount,
       "currency" => strtolower($order->currency),
