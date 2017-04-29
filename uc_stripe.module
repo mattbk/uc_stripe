@@ -575,7 +575,9 @@ function uc_stripe_charge($order_id, $amount, $data) {
         $metadata = array("titles" => implode(";", $titles));
     } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
         $metadata = array("models" => implode(";", $models));
-    }
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
+        $metadata = array();
+        }
 
     $params = array(
       "amount" => $amount,
