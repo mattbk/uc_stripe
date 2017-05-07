@@ -1,9 +1,3 @@
-Based on the 7.x-2.x-dev branch at https://www.drupal.org/project/uc_stripe. Using 
-this as a working repo to track changes. I’m using this on some production sites,
-but no guarantees are made for anyone else. Look through the code!
-
-——
-
 This is an Ubercart payment gateway module for Stripe.
 
 Versions of the Stripe PHP Library and Stripe API that this module currently
