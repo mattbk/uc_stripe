@@ -548,6 +548,24 @@ function uc_stripe_charge($order_id, $amount, $data) {
       throw new Exception('No customer ID found');
     }
 
+   // Set up titles and SKUs
+    $titles = array();
+    $models = array();
+  foreach($order->products as $item){
+            $titles[] = $item->title;
+      $models[] = $item->model;
+    }
+
+    if (variable_get('uc_stripe_metadata_titles',FALSE)==1 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
+        $metadata = array("titles" => implode(";", $titles),"models" => implode(";", $models));
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==1 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
+        $metadata = array("titles" => implode(";", $titles));
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
+        $metadata = array("models" => implode(";", $models));
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
+        $metadata = array();
+        }
+
     $params = array(
       "amount" => $amount,
       "currency" => strtolower($order->currency),
