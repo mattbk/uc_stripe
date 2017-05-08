@@ -562,15 +562,20 @@ function uc_stripe_charge($order_id, $amount, $data) {
     }
 
     // Set up titles and SKUs
-	$titles = var_get(uc_s_m_t, FALSE)
-	$models = var_get(uc_s_m_m, FALSE)
+	$titles = variable_get(uc_s_m_t, FALSE);
+	$models = variable_get(uc_s_m_m, FALSE);
 	$metadata = array();
+	
+	foreach($order->products as $item){
+            $titles[] = $item->title;
+			$models[] = $item->model;
+		}
 
 	if (!empty($models)) { 
-	  $metadata['models'] = implode(";", $models));
+	  $metadata['models'] = implode(";", $models);
 	}
 	if (!empty($titles)) {
-	  $metadata['titles'] = implode(";", $titles));
+	  $metadata['titles'] = implode(";", $titles);
 	}
 
     $params = array(
