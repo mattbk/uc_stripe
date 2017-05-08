@@ -558,26 +558,20 @@ function uc_stripe_charge($order_id, $amount, $data) {
 
     //Bail if there's no customer ID
     if (empty($stripe_customer_id)) {
-      throw new Exception('No customer ID found');
+	  throw new Exception('No customer ID found');
     }
 
     // Set up titles and SKUs
-    $titles = array();
-    $models = array();
-	foreach($order->products as $item){
-            $titles[] = $item->title;
-			$models[] = $item->model;
-		}
+	$titles = var_get(uc_s_m_t, FALSE)
+	$models = var_get(uc_s_m_m, FALSE)
+	$metadata = array();
 
-    if (variable_get('uc_stripe_metadata_titles',FALSE)==1 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
-        $metadata = array("titles" => implode(";", $titles),"models" => implode(";", $models));
-    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==1 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
-        $metadata = array("titles" => implode(";", $titles));
-    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
-        $metadata = array("models" => implode(";", $models));
-    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
-        $metadata = array();
-        }
+	if (!empty($models)) { 
+	  $metadata['models'] = implode(";", $models));
+	}
+	if (!empty($titles)) {
+	  $metadata['titles'] = implode(";", $titles));
+	}
 
     $params = array(
       "amount" => $amount,
