@@ -558,25 +558,23 @@ function uc_stripe_charge($order_id, $amount, $data) {
 
     //Bail if there's no customer ID
     if (empty($stripe_customer_id)) {
-	  throw new Exception('No customer ID found');
+      throw new Exception('No customer ID found');
     }
 
     // Set up titles and SKUs
-	$titles = variable_get('uc_stripe_metadata_titles', FALSE);
-	$models = variable_get('uc_stripe_metadata_models', FALSE);
-	$metadata = array();
-	
-	foreach($order->products as $item){
-            $titles[] = $item->title;
-			$models[] = $item->model;
-		}
+    $titles = variable_get('uc_stripe_metadata_titles', FALSE);
+    $models = variable_get('uc_stripe_metadata_models', FALSE);
+    $metadata = array();
 
-	if (!empty($models)) { 
-	  $metadata['models'] = implode(";", $models);
-	}
-	if (!empty($titles)) {
-	  $metadata['titles'] = implode(";", $titles);
-	}
+    foreach($order->products as $item){
+      $titles[] = $item->title;
+      $models[] = $item->model;}
+
+    if (!empty($models)) {
+      $metadata['models'] = implode(";", $models);
+
+    if (!empty($titles)) {
+      $metadata['titles'] = implode(";", $titles);
 
     $params = array(
       "amount" => $amount,
