@@ -568,14 +568,15 @@ function uc_stripe_charge($order_id, $amount, $data) {
 
     foreach($order->products as $item){
       $titles[] = $item->title;
-      $models[] = $item->model;}
+      $models[] = $item->model;
+      }
 
     if (!empty($models)) {
       $metadata['models'] = implode(";", $models);
-
+      }
     if (!empty($titles)) {
       $metadata['titles'] = implode(";", $titles);
-
+      }
     $params = array(
       "amount" => $amount,
       "currency" => strtolower($order->currency),
