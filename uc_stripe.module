@@ -562,8 +562,8 @@ function uc_stripe_charge($order_id, $amount, $data) {
     }
 
     // Set up titles and SKUs
-	$titles = variable_get(uc_s_m_t, FALSE);
-	$models = variable_get(uc_s_m_m, FALSE);
+	$titles = variable_get('uc_stripe_metadata_titles', FALSE);
+	$models = variable_get('uc_stripe_metadata_models', FALSE);
 	$metadata = array();
 	
 	foreach($order->products as $item){
