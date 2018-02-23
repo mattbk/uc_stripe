@@ -150,15 +150,6 @@ function uc_stripe_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
     '#weight' => -1000,
   );
 
-  // Powered by Stripe (logo from https://stripe.com/about/resources)
-  if (variable_get('uc_stripe_poweredby', FALSE)) {
-    $payment_form['field_message'] = array(
-      '#type' => 'item',
-      '#markup' => "<a href='http://stripe.com'><img src=" . '/' . drupal_get_path('module', 'uc_stripe') . '/images/solid-dark.svg' . " alt='Powered by Stripe'></a>",
-      '#weight' => 1,
-    );
-  }
-
   $payment_form['stripe_token'] = array(
     '#type' => 'hidden',
     '#default_value' => 'default',
@@ -319,7 +310,7 @@ function uc_stripe_settings_form() {
   $form['uc_stripe_settings']['uc_stripe_poweredby'] = array(
     '#type' => 'checkbox',
     '#title' => t('Powered by Stripe'),
-    '#description' => 'Show "powered by Stripe" in checkout.',
+    '#description' => 'Show "powered by Stripe" in shopping cart.',
     '#default_value' => variable_get('uc_stripe_poweredby', FALSE),
   );
 
@@ -547,6 +538,24 @@ function uc_stripe_charge($order_id, $amount, $data) {
     if (empty($stripe_customer_id)) {
       throw new Exception('No customer ID found');
     }
+
+   // Set up titles and SKUs
+    $titles = array();
+    $models = array();
+  foreach($order->products as $item){
+            $titles[] = $item->title;
+            $models[] = $item->model;
+    }
+
+    if (variable_get('uc_stripe_metadata_titles',FALSE)==1 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
+        $metadata = array("titles" => implode(";", $titles),"models" => implode(";", $models));
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==1 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
+        $metadata = array("titles" => implode(";", $titles));
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==1) {
+        $metadata = array("models" => implode(";", $models));
+    } elseif (variable_get('uc_stripe_metadata_titles',FALSE)==0 && variable_get('uc_stripe_metadata_models',FALSE)==0) {
+        $metadata = array();
+        }
 
     $params = array(
       "amount" => $amount,
