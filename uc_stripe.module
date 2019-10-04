@@ -618,10 +618,11 @@ function uc_stripe_charge($order_id, $amount, $data) {
       $models[] = $item->model;
       }
     $metadata = array();
-    if (!empty($models) and variable_get('uc_stripe_metadata_models', TRUE)) {
+
+    if (!empty($models)) {
       $metadata['models'] = implode(";", $models);
       }
-    if (!empty($titles) and variable_get('uc_stripe_metadata_titles', TRUE)) {
+    if (!empty($titles)) {
       $metadata['titles'] = implode(";", $titles);
       }
     $params = array(
@@ -629,11 +630,14 @@ function uc_stripe_charge($order_id, $amount, $data) {
       "currency" => strtolower($order->currency),
       "customer" => $stripe_customer_id,
       "description" => t("Order #@order_id", array("@order_id" => $order_id)),
+      "metadata" => $metadata,
       "payment_method" => $stripe_payment_method_id,
       "payment_method_types" => ['card'],
       "confirm" => true,
 
     );
+    
+    drupal_set_message(print_r($metadata, true), 'status');
 
     $intent_id = $order->data['payment_intent_id'];
 
@@ -1027,6 +1031,7 @@ function _uc_stripe_confirm_payment(){
       $params = array(
           'payment_method' => $data['payment_method_id'],
           "description" => t("Order #@order_id", array("@order_id" => $order_id)),
+          "metadata" => $metadata,
           'amount' => $amount,
           'currency' => strtolower($order->currency),
           'confirmation_method' => 'manual',
@@ -1103,6 +1108,7 @@ function _uc_stripe_create_stripe_customer($order, $payment_method_id = NULL){
 
     $params = array(
         'description' => "OrderID: {$order->order_id}",
+        "metadata" => $metadata,
         'email' => "$order->primary_email"
     );
 
