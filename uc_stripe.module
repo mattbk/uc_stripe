@@ -623,10 +623,6 @@ function uc_stripe_charge($order_id, $amount, $data) {
       "confirm" => true,
 
     );
-    
-    drupal_set_message(print_r($metadata, true), 'status');
-    
-    drupal_set_message(print_r($params, true), 'status');
 
     $intent_id = $order->data['payment_intent_id'];
 
@@ -1016,7 +1012,7 @@ function _uc_stripe_confirm_payment(){
   $intent = null;
   try {
     if (isset($data['payment_method_id'])) {
-      
+
       $params = array(
           'payment_method' => $data['payment_method_id'],
           "description" => t("Order #@order_id", array("@order_id" => $order_id)),
@@ -1028,8 +1024,6 @@ function _uc_stripe_confirm_payment(){
           'setup_future_usage' => 'off_session',
           'save_payment_method' => true,
       );
-      
-      drupal_set_message(print_r($params, true), 'status');
 
       if(!$stripe_customer_id) {
         $customer = _uc_stripe_create_stripe_customer($order, $data['payment_method_id']);
