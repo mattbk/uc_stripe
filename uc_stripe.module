@@ -1134,10 +1134,10 @@ function make_metadata($order){
     }
   $metadata = array();
 
-  if (!empty($models)) {
+  if (!empty($models) and variable_get('uc_stripe_metadata_models', FALSE)) {
     $metadata['models'] = implode(";", $models);
     }
-  if (!empty($titles)) {
+  if (!empty($titles) and variable_get('uc_stripe_metadata_titles', FALSE)) {
     $metadata['titles'] = implode(";", $titles);
     }
     
