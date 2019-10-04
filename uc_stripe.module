@@ -1093,7 +1093,7 @@ function _uc_stripe_create_stripe_customer($order, $payment_method_id = NULL){
 
     $params = array(
         'description' => "OrderID: {$order->order_id}",
-        "metadata" => $metadata,
+        "metadata" => make_metadata($order),
         'email' => "$order->primary_email"
     );
 
