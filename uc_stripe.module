@@ -436,6 +436,20 @@ function uc_stripe_settings_form() {
     '#description' => 'Show "powered by Stripe" in checkout.',
     '#default_value' => variable_get('uc_stripe_poweredby', FALSE),
   );
+  
+  $form['uc_stripe_settings']['uc_stripe_metadata_titles'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Metadata: Title'),
+    '#description' => t('Include order item title(s) in Stripe metadata.'),
+    '#default_value' => variable_get('uc_stripe_metadata_titles', FALSE),
+  );
+
+  $form['uc_stripe_settings']['uc_stripe_metadata_models'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Metadata: Model'),
+    '#description' => t('Include item model(s) (SKU(s)) in Stripe metadata.'),
+    '#default_value' => variable_get('uc_stripe_metadata_models', FALSE),
+  );
 
   return $form;
 }
@@ -604,10 +618,10 @@ function uc_stripe_charge($order_id, $amount, $data) {
       $models[] = $item->model;
       }
     $metadata = array();
-    if (!empty($models)) {
+    if (!empty($models) and variable_get('uc_stripe_metadata_models', TRUE)) {
       $metadata['models'] = implode(";", $models);
       }
-    if (!empty($titles)) {
+    if (!empty($titles) and variable_get('uc_stripe_metadata_titles', TRUE)) {
       $metadata['titles'] = implode(";", $titles);
       }
     $params = array(
