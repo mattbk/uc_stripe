@@ -93,6 +93,57 @@ function uc_stripe_install() {
 }
 
 /**
+ * Implements hook_uninstall().
+ */
+function uc_stripe_uninstall() {
+  variable_del('uc_stripe_authenticaiton_required_email');
+}
+
+/**
+ * Implements hook_schema().
+ */
+function uc_stripe_schema() {
+  $schema['uc_stripe_pending_auth'] = array(
+    'description' => 'Ubercart Stripe - Track orders pending authentication',
+    'fields' => array(
+      'id' => array(
+        'description' => 'id of entry',
+        'type' => 'serial',
+        'not null' => TRUE
+      ),
+      'order_id' => array(
+        'description' => 'Order Id of pending order',
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'rfee_id' => array(
+        'description' => 'Recurring Fee Id of pending order',
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'completed' => array(
+        'description' => 'Competion status of this pending order',
+      'type' => 'int',
+      'not null' => TRUE
+      ),
+      'hash' => array (
+        'description' => 'The unqiue has of order and payment id',
+        'type' => 'varchar',
+        'length' => '100',
+        'not null' => TRUE
+      ),
+    ),
+    'unique keys' => array(
+      'hash' => array(
+        'hash'
+      )
+    ),
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
+
+/**
  * Enable triggered renewals, as uc_recurring manages renewals with this version.
  */
 function uc_stripe_update_7201(&$sandbox) {
@@ -180,4 +231,53 @@ function _uc_stripe_move_customer_id(&$sandbox) {
   } else  {
     $sandbox['#finished'] = $sandbox['progress'] / $sandbox['max'];
   }
+}
+
+/**
+ *
+ * create table to track orders that require extra authentication verification.
+ */
+function uc_stripe_update_7301() {
+
+  $table = array(
+    'description' => 'Ubercart Stripe - Track orders pending authentication',
+    'fields' => array(
+      'id' => array(
+        'description' => 'id of entry',
+        'type' => 'serial',
+        'not null' => TRUE
+      ),
+      'order_id' => array(
+        'description' => 'Order Id of pending order',
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'rfee_id' => array(
+        'description' => 'Recurring Fee Id of pending order',
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'completed' => array(
+        'description' => 'Competion status of this pending order',
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'hash' => array(
+        'description' => 'The unqiue has of order and payment id',
+        'type' => 'varchar',
+        'length' => '100',
+        'not null' => TRUE
+      )
+    ),
+    'unique keys' => array(
+      'hash' => array(
+        'hash'
+      )
+    ),
+    'primary key' => array(
+      'id'
+    )
+  );
+
+  db_create_table('uc_stripe_pending_auth', $table);
 }
