@@ -612,25 +612,12 @@ function uc_stripe_charge($order_id, $amount, $data) {
     }
     $stripe_payment_method_id = $_SESSION['stripe']['payment_method'];
 
-    //Get item titles and models
-    foreach($order->products as $item){
-      $titles[] = $item->title;
-      $models[] = $item->model;
-      }
-    $metadata = array();
-
-    if (!empty($models)) {
-      $metadata['models'] = implode(";", $models);
-      }
-    if (!empty($titles)) {
-      $metadata['titles'] = implode(";", $titles);
-      }
     $params = array(
       "amount" => $amount,
       "currency" => strtolower($order->currency),
       "customer" => $stripe_customer_id,
       "description" => t("Order #@order_id", array("@order_id" => $order_id)),
-      "metadata" => $metadata,
+      "metadata" => make_metadata($order),
       "payment_method" => $stripe_payment_method_id,
       "payment_method_types" => ['card'],
       "confirm" => true,
@@ -638,6 +625,8 @@ function uc_stripe_charge($order_id, $amount, $data) {
     );
     
     drupal_set_message(print_r($metadata, true), 'status');
+    
+    drupal_set_message(print_r($params, true), 'status');
 
     $intent_id = $order->data['payment_intent_id'];
 
@@ -1027,11 +1016,11 @@ function _uc_stripe_confirm_payment(){
   $intent = null;
   try {
     if (isset($data['payment_method_id'])) {
-
+      
       $params = array(
           'payment_method' => $data['payment_method_id'],
           "description" => t("Order #@order_id", array("@order_id" => $order_id)),
-          "metadata" => $metadata,
+          "metadata" => make_metadata($order),
           'amount' => $amount,
           'currency' => strtolower($order->currency),
           'confirmation_method' => 'manual',
@@ -1039,6 +1028,8 @@ function _uc_stripe_confirm_payment(){
           'setup_future_usage' => 'off_session',
           'save_payment_method' => true,
       );
+      
+      drupal_set_message(print_r($params, true), 'status');
 
       if(!$stripe_customer_id) {
         $customer = _uc_stripe_create_stripe_customer($order, $data['payment_method_id']);
@@ -1134,6 +1125,25 @@ function _uc_stripe_create_stripe_customer($order, $payment_method_id = NULL){
   }
 
 }
+
+function make_metadata($order){
+  //Get item titles and models
+  foreach($order->products as $item){
+    $titles[] = $item->title;
+    $models[] = $item->model;
+    }
+  $metadata = array();
+
+  if (!empty($models)) {
+    $metadata['models'] = implode(";", $models);
+    }
+  if (!empty($titles)) {
+    $metadata['titles'] = implode(";", $titles);
+    }
+    
+  return $metadata;
+}
+
 
 /**
  *
