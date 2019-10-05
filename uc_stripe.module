@@ -436,6 +436,20 @@ function uc_stripe_settings_form() {
     '#description' => 'Show "powered by Stripe" in checkout.',
     '#default_value' => variable_get('uc_stripe_poweredby', FALSE),
   );
+  
+  $form['uc_stripe_settings']['uc_stripe_metadata_titles'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Metadata: Title'),
+    '#description' => t('Include order item title(s) in Stripe metadata.'),
+    '#default_value' => variable_get('uc_stripe_metadata_titles', FALSE),
+  );
+
+  $form['uc_stripe_settings']['uc_stripe_metadata_models'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Metadata: Model'),
+    '#description' => t('Include item model(s) (SKU(s)) in Stripe metadata.'),
+    '#default_value' => variable_get('uc_stripe_metadata_models', FALSE),
+  );
 
   return $form;
 }
@@ -603,6 +617,7 @@ function uc_stripe_charge($order_id, $amount, $data) {
       "currency" => strtolower($order->currency),
       "customer" => $stripe_customer_id,
       "description" => t("Order #@order_id", array("@order_id" => $order_id)),
+      "metadata" => make_metadata($order),
       "payment_method" => $stripe_payment_method_id,
       "payment_method_types" => ['card'],
       "confirm" => true,
@@ -1001,6 +1016,7 @@ function _uc_stripe_confirm_payment(){
       $params = array(
           'payment_method' => $data['payment_method_id'],
           "description" => t("Order #@order_id", array("@order_id" => $order_id)),
+          "metadata" => make_metadata($order),
           'amount' => $amount,
           'currency' => strtolower($order->currency),
           'confirmation_method' => 'manual',
@@ -1077,6 +1093,7 @@ function _uc_stripe_create_stripe_customer($order, $payment_method_id = NULL){
 
     $params = array(
         'description' => "OrderID: {$order->order_id}",
+        "metadata" => make_metadata($order),
         'email' => "$order->primary_email"
     );
 
@@ -1102,6 +1119,25 @@ function _uc_stripe_create_stripe_customer($order, $payment_method_id = NULL){
   }
 
 }
+
+function make_metadata($order){
+  //Get item titles and models
+  foreach($order->products as $item){
+    $titles[] = $item->title;
+    $models[] = $item->model;
+    }
+  $metadata = array();
+
+  if (!empty($models) and variable_get('uc_stripe_metadata_models', FALSE)) {
+    $metadata['models'] = implode(";", $models);
+    }
+  if (!empty($titles) and variable_get('uc_stripe_metadata_titles', FALSE)) {
+    $metadata['titles'] = implode(";", $titles);
+    }
+    
+  return $metadata;
+}
+
 
 /**
  *
