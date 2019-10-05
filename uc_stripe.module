@@ -416,10 +416,10 @@ function uc_stripe_settings_form() {
 
   $email_text = _uc_stripe_get_authentication_required_email_text();
 
-  $form['uc_stripe_settings']['uc_stripe_authenticaiton_required_email'] = array(
+  $form['uc_stripe_settings']['uc_stripe_authentication_required_email'] = array(
     '#type' => 'textarea',
     '#title' => t('Email for Recurring payment authentication'),
-    '#default_value' => variable_get('uc_stripe_authenticaiton_required_email', $email_text),
+    '#default_value' => variable_get('uc_stripe_authentication_required_email', $email_text),
     '#description' => t('If your site uses recurring payments, some transactions will require the customer to return to the site and authenticate before the subscrption payment can be processed.')
   );
 
@@ -768,7 +768,7 @@ function uc_stripe_renew($order, &$fee) {
       ))->execute();
 
       // Prepare email to alert user that authentication is required.
-      $params['body'] = variable_get('uc_stripe_authenticaiton_required_email', _uc_stripe_get_authentication_required_email_text());
+      $params['body'] = variable_get('uc_stripe_authentication_required_email', _uc_stripe_get_authentication_required_email_text());
       $params['user'] = user_load($order->uid);
       $params['hash'] = $hash;
       drupal_mail('uc_stripe', 'authentication_required', $params['user']->mail,language_default(), $params);

@@ -96,7 +96,7 @@ function uc_stripe_install() {
  * Implements hook_uninstall().
  */
 function uc_stripe_uninstall() {
-  variable_del('uc_stripe_authenticaiton_required_email');
+  variable_del('uc_stripe_authentication_required_email');
 }
 
 /**
@@ -123,8 +123,8 @@ function uc_stripe_schema() {
       ),
       'completed' => array(
         'description' => 'Competion status of this pending order',
-      'type' => 'int',
-      'not null' => TRUE
+        'type' => 'int',
+        'not null' => TRUE
       ),
       'hash' => array (
         'description' => 'The unqiue has of order and payment id',
@@ -234,8 +234,7 @@ function _uc_stripe_move_customer_id(&$sandbox) {
 }
 
 /**
- *
- * create table to track orders that require extra authentication verification.
+ * Creates table to track orders that require extra authentication verification.
  */
 function uc_stripe_update_7301() {
 
@@ -267,17 +266,27 @@ function uc_stripe_update_7301() {
         'type' => 'varchar',
         'length' => '100',
         'not null' => TRUE
-      )
+      ),
     ),
     'unique keys' => array(
       'hash' => array(
         'hash'
       )
     ),
-    'primary key' => array(
-      'id'
-    )
+    'primary key' => array('id'),
   );
 
   db_create_table('uc_stripe_pending_auth', $table);
+}
+
+/**
+ * Changes typo in variable uc_stripe_authenticaiton_required_email.
+ */
+function uc_stripe_update_7302() {
+  $typo_var_name = 'uc_stripe_authenticaiton_required_email';
+  $value = variable_get($typo_var_name, '');
+  if (!empty($value)) {
+    variable_set('uc_stripe_authentication_required_email', $value);
+    variable_del($typo_var_name);
+  }
 }
