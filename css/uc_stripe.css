@@ -30,3 +30,5 @@ a.poweredbylink:hover {
 #uc_stripe_messages.hidden {display: none;}
 
 .stripe-warning {color: red; font-style: oblique; }
+
+#edit-panes-payment-details-stripe-card-element{max-width: 600px}
